@@ -1,0 +1,31 @@
+{
+  "name": "vue-uri",
+  "version": "0.1.0",
+  "description": "easy query uri import for vue &amp; vue-router",
+  "main": "src/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "@hudk/assert": "^0.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hudk114/vue-uri.git"
+  },
+  "keywords": [
+    "vue",
+    "vue-router",
+    "uri"
+  ],
+  "author": "hudk",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hudk114/vue-uri/issues"
+  },
+  "homepage": "https://github.com/hudk114/vue-uri#readme"
+}
