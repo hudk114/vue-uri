@@ -25,7 +25,7 @@ export default {
   methods: {
     __$initQueryData () {
       Vue.set(this, 'queryData', this.$options.data().queryData);
-      this.__$cacheQuery = null;
+      this.$data.__$cacheQuery = null;
     },
     __$formatRoute (obj) {
       let query = {};
@@ -82,11 +82,11 @@ export default {
     // query只改变router，而router的改变会触发真正的查询操作
     handleQuery () {
       this.m_page = 1;
-      this.__$cacheQuery = JSON.parse(JSON.stringify(this.queryData));
-      this.__$cacheQuery.page = this.m_page;
-      this.__$cacheQuery.pageSize = this.m_pageSize;
+      this.$data.__$cacheQuery = JSON.parse(JSON.stringify(this.queryData));
+      this.$data.__$cacheQuery.page = this.m_page;
+      this.$data.__$cacheQuery.pageSize = this.m_pageSize;
 
-      const o = JSON.parse(JSON.stringify(this.__$cacheQuery));
+      const o = JSON.parse(JSON.stringify(this.$data.__$cacheQuery));
 
       this.__$formatRoute(o);
     },
@@ -97,12 +97,12 @@ export default {
       this.m_page = val || this.m_page;
       this.m_pageSize = pageSize || this.m_pageSize;
       // 只改变部分条件
-      this.__$cacheQuery =
-        this.__$cacheQuery || JSON.parse(JSON.stringify(this.queryData));
-      this.__$cacheQuery.page = this.m_page;
-      this.__$cacheQuery.pageSize = this.m_pageSize;
+      this.$data.__$cacheQuery =
+        this.$data.__$cacheQuery || JSON.parse(JSON.stringify(this.queryData));
+      this.$data.__$cacheQuery.page = this.m_page;
+      this.$data.__$cacheQuery.pageSize = this.m_pageSize;
 
-      const o = JSON.parse(JSON.stringify(this.__$cacheQuery));
+      const o = JSON.parse(JSON.stringify(this.$data.__$cacheQuery));
 
       this.__$formatRoute(o);
     }
@@ -118,7 +118,7 @@ export default {
 
       // 非同页面跳转使用缓存内的值刷新route
       if (!this.__$fromPageInner(to, from)) {
-        this.__$cacheQuery && (this.__$formatRoute(this.__$cacheQuery));
+        this.$data.__$cacheQuery && (this.__$formatRoute(this.$data.__$cacheQuery));
         // 刷新后的$route会再次触发$route更新，这次取消
         return;
       }

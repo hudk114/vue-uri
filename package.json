@@ -1,6 +1,6 @@
 {
-  "name": "vue-uri",
-  "version": "0.1.0",
+  "name": "@hudk/vue-uri",
+  "version": "0.1.1",
   "description": "easy query uri import for vue &amp; vue-router",
   "main": "src/index.js",
   "directories": {
