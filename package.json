@@ -1,13 +1,15 @@
 {
   "name": "@hudk/vue-uri",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "easy query uri import for vue &amp; vue-router",
   "main": "src/index.js",
   "directories": {
     "test": "test"
   },
   "dependencies": {
-    "@hudk/assert": "^0.1.0"
+    "@hudk/assert": "^0.1.0",
+    "vue": "^2.3.0",
+    "vue-router": "^3.0.0"
   },
   "devDependencies": {},
   "scripts": {

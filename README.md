@@ -32,3 +32,5 @@ easy query uri import for vue &amp; vue-router
 
 # 跳页逻辑
 
+# 注意
+1. 空值不会被挂载到router中，也不会用作跳页逻辑中的逻辑比较，应当给一个其他值（比如' '）

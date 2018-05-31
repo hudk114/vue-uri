@@ -28,16 +28,7 @@ export default {
       this.$data.__$cacheQuery = null;
     },
     __$formatRoute (obj) {
-      let query = {};
-
-      for (const key in obj) {
-        if (obj.hasOwnProperty(key)) {
-          const val = obj[key];
-          !expect(val).isEmptyOrNull() &&
-            (query[key] = val);
-        }
-      }
-
+      const query = this.__$removeEmpty(obj);
       this.$router.push({ query });
     },
     /**
@@ -79,12 +70,57 @@ export default {
       return to.matched.length > 0 &&
         to.matched[to.matched.length - 1].instances.default === this;
     },
+    // TODO 比较to的query与本地cache有没有改变
+    __$routeNotChangeCache (to) {
+      function deepCompare (objA, objB) {
+        // TODO 目前不比较奇奇怪怪的情况，只考虑对象与基本值，不考虑数组
+        if (typeof objA !== typeof objB) {
+          return false;
+        }
+
+        // 基本值比较
+        if (objA === null || objB === null || typeof objA !== 'object') {
+          return objA === objB;
+        }
+
+        for (const key in objA) {
+          if (objA.hasOwnProperty(key) !== objB.hasOwnProperty(key)) return false;
+          if (!deepCompare(objA[key], objB[key])) return false;
+        }
+
+        for (const key in objA) {
+          if (objA.hasOwnProperty(key) !== objB.hasOwnProperty(key)) return false;
+          if (!deepCompare(objA[key], objB[key])) return false;
+        }
+
+        return true;
+      }
+
+      return deepCompare(this.$data.__$cacheQuery, to.query);
+    },
+    // 清除obj中value为空的字段
+    __$removeEmpty (obj) {
+      const o = {};
+
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          const val = obj[key];
+          !expect(val).isEmptyOrNull() &&
+            (o[key] = val);
+        }
+      }
+
+      return o;
+    },
     // query只改变router，而router的改变会触发真正的查询操作
     handleQuery () {
       this.m_page = 1;
       this.$data.__$cacheQuery = JSON.parse(JSON.stringify(this.queryData));
       this.$data.__$cacheQuery.page = this.m_page;
       this.$data.__$cacheQuery.pageSize = this.m_pageSize;
+
+      // 不挂载空的
+      this.$data.__$cacheQuery = this.__$removeEmpty(this.$data.__$cacheQuery);
 
       const o = JSON.parse(JSON.stringify(this.$data.__$cacheQuery));
 
@@ -112,15 +148,20 @@ export default {
      * 同一页面内跳转刷新query缓存，否则不刷新
      */
     $route (to, from) {
+      // debugger
       if (!this.__$isCurrentPage(to, from)) {
         return;
       }
 
       // 非同页面跳转使用缓存内的值刷新route
       if (!this.__$fromPageInner(to, from)) {
-        this.$data.__$cacheQuery && (this.__$formatRoute(this.$data.__$cacheQuery));
-        // 刷新后的$route会再次触发$route更新，这次取消
-        return;
+        // TODO 如果有需要刷新的情况，给一个值（改为需要使用cache的时候不刷新）
+        // 只有缓存值更新后才需要重新format
+        if (this.$data.__$cacheQuery && !this.__$routeNotChangeCache(to)) {
+          this.__$formatRoute(this.$data.__$cacheQuery);
+          // 刷新后的$route会再次触发$route更新，这次取消
+          return;
+        }
       }
 
       // TODO 如果是主动触发查询的话不需要
