@@ -20,7 +20,7 @@ export default {
   },
   beforeMount () {
     this.__$routeToParams();
-    this.query && this.query();
+    this.__$triggerQuery();
   },
   methods: {
     __$initQueryData () {
@@ -36,8 +36,7 @@ export default {
      */
     // TODO
     __$triggerQuery () {
-      // 为了绑定this
-      this.query && this.query();
+      typeof this.query === 'function' && this.query();
     },
     // __$triggerQuery: throttleMedium(function () {
     //   // 为了绑定this
@@ -113,7 +112,7 @@ export default {
       return o;
     },
     // query只改变router，而router的改变会触发真正的查询操作
-    handleQuery () {
+    handleQuery (refresh = false) {
       this.m_page = 1;
       this.$data.__$cacheQuery = JSON.parse(JSON.stringify(this.queryData));
       this.$data.__$cacheQuery.page = this.m_page;
@@ -123,6 +122,11 @@ export default {
       this.$data.__$cacheQuery = this.__$removeEmpty(this.$data.__$cacheQuery);
 
       const o = JSON.parse(JSON.stringify(this.$data.__$cacheQuery));
+
+      if (this.__$routeNotChangeCache(this.$route) && refresh) {
+        // 如果制定了refresh，必须要刷新
+        this.query();
+      }
 
       this.__$formatRoute(o);
     },
@@ -138,6 +142,8 @@ export default {
       this.$data.__$cacheQuery.page = this.m_page;
       this.$data.__$cacheQuery.pageSize = this.m_pageSize;
 
+      this.$data.__$cacheQuery = this.__$removeEmpty(this.$data.__$cacheQuery);
+
       const o = JSON.parse(JSON.stringify(this.$data.__$cacheQuery));
 
       this.__$formatRoute(o);
@@ -148,7 +154,6 @@ export default {
      * 同一页面内跳转刷新query缓存，否则不刷新
      */
     $route (to, from) {
-      // debugger
       if (!this.__$isCurrentPage(to, from)) {
         return;
       }
